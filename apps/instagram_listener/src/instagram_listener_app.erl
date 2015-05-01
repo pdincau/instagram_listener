@@ -20,4 +20,4 @@ stop(_State) ->
     ok.
 
 routes() ->
-    [{'_', [{"/instagram/:app_name", handler, []}]}].
+    [{'_', [{"/instagram", handler, []}]}].
