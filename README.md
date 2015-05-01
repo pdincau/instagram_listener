@@ -1,10 +1,8 @@
 # instagram_listener
- An Erlang implementation for receiving Instagram real time updates
-=======
-instagram_listener
-=====
+
+An Erlang implementation for receiving Instagram real time updates
 
 Build
 -----
 
-    $ rebar3 compile
+    $ rebar3 release
