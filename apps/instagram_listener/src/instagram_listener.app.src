@@ -1,0 +1,13 @@
+{application, instagram_listener,
+ [{description, "An Erlang application for Instagram Real-time Photo Updates"}
+ ,{vsn, "0.1.0"}
+ ,{registered, []}
+ ,{mod, {'instagram_listener_app', []}}
+ ,{applications,
+   [kernel
+   ,stdlib
+   ,cowboy
+   ]}
+ ,{env,[]}
+ ,{modules, []}
+ ]}.
