@@ -17,14 +17,12 @@ handle(Req, State) ->
     {ok, Req3, State}.
 
 reply(<<"GET">>, Req) ->
-    {SubscriptionParameters, Req1} = subscription_parameters(Req),
+    SubscriptionParameters = subscription_parameters(Req),
     case SubscriptionParameters of
-        {_, _, undefined} ->
-            cowboy_req:reply(400, Req1);
         {?HUB_MODE, ?VERIFY_TOKEN, Challenge} ->
-            cowboy_req:reply(200, [], Challenge, Req1);
+            cowboy_req:reply(200, [], Challenge, Req);
         {_, _, _} ->
-            cowboy_req:reply(400, Req1)
+            cowboy_req:reply(400, Req)
     end;
 
 reply(<<"POST">>, Req) ->
