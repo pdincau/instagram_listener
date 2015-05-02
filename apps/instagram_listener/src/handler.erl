@@ -5,8 +5,6 @@
 -export([terminate/3]).
 
 -define(HUB_MODE, <<"subscribe">>).
--define(VERIFY_TOKEN, <<"token">>).
--define(APP_SECRET, <<"secret">>).
 
 init(_Transport, Req, []) ->
     {ok, Req, undefined}.
@@ -17,9 +15,10 @@ handle(Req, State) ->
     {ok, Req3, State}.
 
 reply(<<"GET">>, Req) ->
+    {ok, VerifyToken} = application:get_env(instagram_listener, verify_token),
     SubscriptionParameters = subscription_parameters(Req),
     case SubscriptionParameters of
-        {?HUB_MODE, ?VERIFY_TOKEN, Challenge} ->
+        {?HUB_MODE, VerifyToken, Challenge} ->
             cowboy_req:reply(200, [], Challenge, Req);
         {_, _, _} ->
             cowboy_req:reply(400, Req)
@@ -63,7 +62,8 @@ is_valid_pair(undefined, _) ->
     false;
 
 is_valid_pair(XHubSignature, Payload) ->
-    <<Mac:160/integer>> = crypto:hmac(sha, ?APP_SECRET, Payload),
+    {ok, AppSecret} = application:get_env(instagram_listener, app_secret),
+    <<Mac:160/integer>> = crypto:hmac(sha, AppSecret, Payload),
     Signature = lists:flatten(io_lib:format("sha1=~40.16.0b", [Mac])),
     binary_to_list(XHubSignature) =:= Signature.
 
