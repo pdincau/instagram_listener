@@ -57,8 +57,10 @@ subscription_parameters(Req) ->
 is_valid_update(Req) ->
     {XHubSignature, Req2} = cowboy_req:header(<<"x-hub-signature">>, Req),
     {ok, [{Payload, true}], _Req3} = cowboy_req:body_qs(Req2),
-
     is_valid_pair(XHubSignature, Payload).
+
+is_valid_pair(undefined, _) ->
+    false;
 
 is_valid_pair(XHubSignature, Payload) ->
     <<Mac:160/integer>> = crypto:hmac(sha, ?APP_SECRET, Payload),
