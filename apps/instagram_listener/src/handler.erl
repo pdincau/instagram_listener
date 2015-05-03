@@ -62,8 +62,8 @@ is_valid_pair(undefined, _) ->
     false;
 
 is_valid_pair(XHubSignature, Payload) ->
-    {ok, AppSecret} = application:get_env(instagram_listener, app_secret),
-    <<Mac:160/integer>> = crypto:hmac(sha, AppSecret, Payload),
+    {ok, ClientSecret} = application:get_env(instagram_listener, client_secret),
+    <<Mac:160/integer>> = crypto:hmac(sha, ClientSecret, Payload),
     Signature = lists:flatten(io_lib:format("sha1=~40.16.0b", [Mac])),
     binary_to_list(XHubSignature) =:= Signature.
 
