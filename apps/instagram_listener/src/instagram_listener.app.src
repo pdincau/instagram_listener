@@ -8,6 +8,10 @@
    ,stdlib
    ,cowboy
    ,jsx
+   ,inets
+   ,crypto
+   ,public_key
+   ,ssl
    ]}
  ,{env,[]}
  ,{modules, []}
