@@ -10,7 +10,7 @@ subscribe(Subscription) ->
     {ok, ClientSecret} = application:get_env(instagram_listener, client_secret),
     {ok, CallbackUrl} = application:get_env(instagram_listener, callback_url),
     Body = body_for(ClientId, ClientSecret, CallbackUrl, custom_body(Subscription)),
-    do_request(post, ?URL, Body).
+    do_request(post, binary_to_list(?URL), Body).
 
 subscriptions() ->
     {ok, ClientId} = application:get_env(instagram_listener, client_id),
