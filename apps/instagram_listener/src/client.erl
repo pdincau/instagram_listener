@@ -1,4 +1,4 @@
--module(subscriber).
+-module(client).
 
 -behaviour(gen_server).
 
@@ -91,9 +91,9 @@ handle_unsubscribe({object, Object}, Secret, Id) ->
     Url = url_for(Secret, Id, BinaryParams),
     do_request(delete, Url);
 
-handle_unsubscribe({id, Id}, Secret, Id) ->
+handle_unsubscribe({id, SubscriptionId}, Secret, Id) ->
     Params = <<"id={unsubscribe_id}">>,
-    BinaryParams = binary:replace(Params, <<"{unsubscribe_id}">>, Id),
+    BinaryParams = binary:replace(Params, <<"{unsubscribe_id}">>, SubscriptionId),
     Url = url_for(Secret, Id, BinaryParams),
     do_request(delete, Url).
 
