@@ -22,9 +22,9 @@ unsubscribe({id, Id}) when is_binary(Id) ->
     Params = <<"id={unsubscribe_id}">>,
     do_request(delete, binary:replace(Params, <<"{unsubscribe_id}">>, Id));
 
-unsubscribe({object, Tag}) when is_binary(Tag) ->
-    Params = <<"tag={unsubscribe_tag}">>,
-    do_request(delete, binary:replace(Params, <<"{unsubscribe_tag}">>, Tag)).
+unsubscribe({object, Object}) when is_binary(Object) ->
+    Params = <<"object={unsubscribe_object}">>,
+    do_request(delete, binary:replace(Params, <<"{unsubscribe_object}">>, Object)).
 
 do_request(Verb, Params) ->
     {ok, ClientId} = application:get_env(instagram_listener, client_id),
