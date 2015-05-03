@@ -68,38 +68,39 @@ code_change(_OldVsn, State, _Extra) ->
 
 handle_list_subscriptions(Secret, Id) ->
     Url = url_for(Secret, Id),
-    case httpc:request(Url) of
-        {ok, {{_, 200, _}, _Headers, Body}} ->
-            Body;
-        Error ->
-            {error, Error}
-    end.
+    do_get(Url).
 
 handle_subscribe(Subscription, Id, Secret, CallbackUrl, Token) ->
     Body = body_for(Id, Secret, CallbackUrl, Token, custom_body(Subscription)),
-    do_request(post, binary_to_list(?URL), Body).
+    post(binary_to_list(?URL), Body).
 
 handle_unsubscribe(all, Secret, Id) ->
     Url = url_for(Secret, Id, <<"object=all">>),
-    do_request(delete, Url);
+    delete(Url);
 
 handle_unsubscribe({object, Object}, Secret, Id) ->
     Params = <<"object={unsubscribe_object}">>,
     BinaryParams = binary:replace(Params, <<"{unsubscribe_object}">>, Object),
     Url = url_for(Secret, Id, BinaryParams),
-    do_request(delete, Url);
+    delete(Url);
 
 handle_unsubscribe({id, SubscriptionId}, Secret, Id) ->
     Params = <<"id={unsubscribe_id}">>,
     BinaryParams = binary:replace(Params, <<"{unsubscribe_id}">>, SubscriptionId),
     Url = url_for(Secret, Id, BinaryParams),
-    do_request(delete, Url).
+    delete(Url).
 
-do_request(Verb, Url) ->
-    do_request(Verb, Url, <<"">>).
+post(Url, Body) ->
+    request(post, {Url, [], "", Body}).
 
-do_request(Verb, Url, Body) ->
-    case httpc:request(Verb, {Url, [], "", Body}, [], []) of
+do_get(Url) ->
+    request(get,  {Url, []}).
+
+delete(Url) ->
+   request(delete, {Url, [], "", <<"">>}).
+
+request(Method, Request) ->
+    case httpc:request(Method, Request, [], []) of
         {ok, {{_, 200, _}, _Headers, ResponseBody}} ->
             ResponseBody;
         Error ->
