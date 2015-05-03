@@ -10,7 +10,6 @@ subscribe(Subscription) ->
     {ok, ClientSecret} = application:get_env(instagram_listener, client_secret),
     {ok, CallbackUrl} = application:get_env(instagram_listener, callback_url),
     Body = body_for(ClientId, ClientSecret, CallbackUrl, custom_body(Subscription)),
-    io:format("~p~n", [Body]),
     do_request(post, ?URL, Body).
 
 subscriptions() ->
@@ -28,7 +27,6 @@ unsubscribe() ->
     {ok, ClientId} = application:get_env(instagram_listener, client_id),
     {ok, ClientSecret} = application:get_env(instagram_listener, client_secret),
     Url = url_for(ClientSecret, ClientId, <<"object=all">>),
-    io:format("url ~p~n", [Url]),
     do_request(delete, Url).
 
 unsubscribe({id, Id}) when is_binary(Id) ->
@@ -37,7 +35,6 @@ unsubscribe({id, Id}) when is_binary(Id) ->
     Params = <<"id={unsubscribe_id}">>,
     BinaryParams = binary:replace(Params, <<"{unsubscribe_id}">>, Id),
     Url = url_for(ClientSecret, ClientId, BinaryParams),
-    io:format("url ~p~n", [Url]),
     do_request(delete, Url);
 
 unsubscribe({object, Object}) when is_binary(Object) ->
@@ -46,7 +43,6 @@ unsubscribe({object, Object}) when is_binary(Object) ->
     Params = <<"object={unsubscribe_object}">>,
     BinaryParams = binary:replace(Params, <<"{unsubscribe_object}">>, Object),
     Url = url_for(ClientSecret, ClientId, BinaryParams),
-    io:format("url ~p~n", [Url]),
     do_request(delete, Url).
 
 do_request(Verb, Url) ->
