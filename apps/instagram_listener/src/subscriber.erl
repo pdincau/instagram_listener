@@ -1,8 +1,21 @@
 -module(subscriber).
 
--export([subscriptions/0, unsubscribe/0, unsubscribe/1]).
+-export([subscribe/1, subscriptions/0, unsubscribe/0, unsubscribe/1]).
 
 -define(BASE_URL, <<"https://api.instagram.com/v1/subscriptions?client_secret={client-secret}&client_id={client-id}&{params}">>).
+
+subscribe({tag, _ObjectId}) ->
+    {error, not_implemented};
+
+subscribe({location, _ObjectId}) ->
+    {error, not_implemented};
+
+subscribe({geography, {_Lat, _Lng, _Radius}}) ->
+    {error, not_implemented};
+
+subscribe({user, _User}) ->
+    %% to do not sure how this works
+    {error, not_implemented}.
 
 subscriptions() ->
     {ok, ClientId} = application:get_env(instagram_listener, client_id),
