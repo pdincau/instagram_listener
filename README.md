@@ -6,3 +6,7 @@ Build
 -----
 
     $ rebar3 release
+
+Run in dev mode:
+
+    $ _build/default/rel/instagram_listener/bin/instagram_listener console
