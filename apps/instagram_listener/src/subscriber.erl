@@ -3,13 +3,14 @@
 -export([subscribe/1, subscriptions/0, unsubscribe/0, unsubscribe/1]).
 
 -define(URL, <<"https://api.instagram.com/v1/subscriptions">>).
--define(BASE_BODY, <<"client_id={client-id}&client_secret={client-secret}&callback_url={callback_url}&{params}">>).
+-define(BASE_BODY, <<"client_id={client-id}&client_secret={client-secret}&callback_url={callback_url}&verify_token={verify_token}&{params}">>).
 
 subscribe(Subscription) ->
     {ok, ClientId} = application:get_env(instagram_listener, client_id),
     {ok, ClientSecret} = application:get_env(instagram_listener, client_secret),
     {ok, CallbackUrl} = application:get_env(instagram_listener, callback_url),
-    Body = body_for(ClientId, ClientSecret, CallbackUrl, custom_body(Subscription)),
+    {ok, VerifyToken} = application:get_env(instagram_listener, verify_token),
+    Body = body_for(ClientId, ClientSecret, CallbackUrl, VerifyToken, custom_body(Subscription)),
     do_request(post, binary_to_list(?URL), Body).
 
 subscriptions() ->
@@ -67,12 +68,13 @@ url_for(ClientSecret, ClientId, Params) ->
     Url2 = binary:replace(Url1, <<"{params}">>, Params),
     binary_to_list(Url2).
 
-body_for(ClientId, ClientSecret, CallbackUrl, Params) ->
+body_for(ClientId, ClientSecret, CallbackUrl, VerifyToken, Params) ->
     Body = binary:replace(?BASE_BODY, <<"{client-id}">>, ClientId),
     Body1 = binary:replace(Body, <<"{client-secret}">>, ClientSecret),
     Body2 = binary:replace(Body1, <<"{callback_url}">>, CallbackUrl),
-    Body3 = binary:replace(Body2, <<"{params}">>, Params),
-    binary_to_list(Body3).
+    Body3 = binary:replace(Body2, <<"{verify_token}">>, VerifyToken),
+    Body4 = binary:replace(Body3, <<"{params}">>, Params),
+    binary_to_list(Body4).
 
 custom_body(user) ->
     %% TODO: Not sure here
