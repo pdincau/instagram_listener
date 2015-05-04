@@ -7,7 +7,7 @@
 
 -define(SERVER, ?MODULE).
 -define(URL, <<"https://api.instagram.com/v1/subscriptions">>).
--define(BASE_BODY, <<"client_id={client-id}&client_secret={client-secret}&callback_url={callback_url}&verify_token={verify_token}&{params}">>).
+-define(BASE_BODY, <<"client_id=~s&client_secret=~s&callback_url=~s&verify_token=~s&~s">>).
 
 -record(state, {id, secret, callbackUrl, token}).
 
@@ -79,15 +79,15 @@ handle_unsubscribe(all, Secret, Id) ->
     delete(Url);
 
 handle_unsubscribe({object, Object}, Secret, Id) ->
-    Params = <<"object={unsubscribe_object}">>,
-    BinaryParams = binary:replace(Params, <<"{unsubscribe_object}">>, Object),
-    Url = url_for(Secret, Id, BinaryParams),
+    Params = <<"object=~s">>,
+    Params1 = lists:flatten(io_lib:format(Params, [Object])),
+    Url = url_for(Secret, Id, Params1),
     delete(Url);
 
 handle_unsubscribe({id, SubscriptionId}, Secret, Id) ->
-    Params = <<"id={unsubscribe_id}">>,
-    BinaryParams = binary:replace(Params, <<"{unsubscribe_id}">>, SubscriptionId),
-    Url = url_for(Secret, Id, BinaryParams),
+    Params = <<"id=~s">>,
+    Params1 = lists:flatten(io_lib:format(Params, [SubscriptionId])),
+    Url = url_for(Secret, Id, Params1),
     delete(Url).
 
 post(Url, Body) ->
@@ -111,35 +111,24 @@ url_for(ClientSecret, ClientId) ->
     url_for(ClientSecret, ClientId, <<"">>).
 
 url_for(ClientSecret, ClientId, Params) ->
-    SubscriptionParams = <<"?client_secret={client-secret}&client_id={client-id}&{params}">>,
-    SubscribeUrl = <<?URL/binary, SubscriptionParams/binary>>,
-    Url = binary:replace(SubscribeUrl, <<"{client-secret}">>, ClientSecret),
-    Url1 = binary:replace(Url, <<"{client-id}">>, ClientId),
-    Url2 = binary:replace(Url1, <<"{params}">>, Params),
-    binary_to_list(Url2).
+    SubscriptionParams = <<"?client_secret=~s&client_id=~s&~s">>,
+    lists:flatten(io_lib:format(<<?URL/binary, SubscriptionParams/binary>>, [ClientSecret, ClientId, Params])).
 
 body_for(ClientId, ClientSecret, CallbackUrl, VerifyToken, Params) ->
-    Body = binary:replace(?BASE_BODY, <<"{client-id}">>, ClientId),
-    Body1 = binary:replace(Body, <<"{client-secret}">>, ClientSecret),
-    Body2 = binary:replace(Body1, <<"{callback_url}">>, CallbackUrl),
-    Body3 = binary:replace(Body2, <<"{verify_token}">>, VerifyToken),
-    Body4 = binary:replace(Body3, <<"{params}">>, Params),
-    binary_to_list(Body4).
+    lists:flatten(io_lib:format(?BASE_BODY, [ClientId, ClientSecret, CallbackUrl, VerifyToken, Params])).
 
 custom_body(user) ->
     %% TODO: Not sure here
     <<"object=user&aspect=media">>;
 
 custom_body({tag, ObjectId}) ->
-    Body = <<"object=tag&aspect=media&object_id={object_id}">>,
-    binary:replace(Body, <<"{object_id}">>, ObjectId);
+    Body = <<"object=tag&aspect=media&object_id=~s">>,
+    lists:flatten(io_lib:format(Body, [ObjectId]));
 
 custom_body({location, ObjectId}) ->
-    Body = <<"object=location&aspect=media&object_id={object_id}">>,
-    binary:replace(Body, <<"{object_id}">>, ObjectId);
+    Body = <<"object=location&aspect=media&object_id=~s">>,
+    lists:flatten(io_lib:format(Body, [ObjectId]));
 
 custom_body({geography, {Lat, Lng, Radius}}) ->
-    Body = <<"object=geography&lat={lat}&lng={lng}&radius={radius}&aspect=media">>,
-    Body1 = binary:replace(Body, <<"{lat}">>, Lat),
-    Body2 = binary:replace(Body1, <<"{lng}">>, Lng),
-    binary:replace(Body2, <<"{radius}">>, Radius).
+    Body = <<"object=geography&lat=~s&lng=~s&radius=~s&aspect=media">>,
+    lists:flatten(io_lib:format(Body, [Lat, Lng, Radius])).
