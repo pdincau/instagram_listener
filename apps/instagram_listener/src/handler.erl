@@ -70,5 +70,5 @@ is_valid_pair(XHubSignature, Payload) ->
 handle_updates(Req) ->
     {ok, [{Payload, true}], Req2} = cowboy_req:body_qs(Req),
     Update = jsx:decode(Payload),
-    spawn(fun() -> io:format("update is~p~n", [Update]) end),
+    spawn(fun() -> worker:handle(Update) end),
     Req2.
