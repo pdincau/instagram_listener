@@ -1,8 +1,3 @@
-%%%-------------------------------------------------------------------
-%% @doc instagram_listener top level supervisor.
-%% @end
-%%%-------------------------------------------------------------------
-
 -module(instagram_listener_sup).
 
 -behaviour(supervisor).
@@ -15,21 +10,11 @@
 
 -define(SERVER, ?MODULE).
 
-%%====================================================================
-%% API functions
-%%====================================================================
+-define(CHILD(I, Type), {I, {I, start_link, []}, permanent, 5000, Type, [I]}).
 
 start_link() ->
     supervisor:start_link({local, ?SERVER}, ?MODULE, []).
 
-%%====================================================================
-%% Supervisor callbacks
-%%====================================================================
-
-%% Child :: {Id,StartFunc,Restart,Shutdown,Type,Modules}
 init([]) ->
-    {ok, { {one_for_all, 0, 1}, []} }.
-
-%%====================================================================
-%% Internal functions
-%%====================================================================
+    Procs = [?CHILD(client, worker)],
+    {ok, { {one_for_all, 0, 1}, Procs} }.
