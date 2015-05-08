@@ -44,18 +44,19 @@ handle_post(Req, State) ->
 
 delete_resource(Req, State) ->
     {SubscriptionId, Req1} =  cowboy_req:binding(subscription_id, Req),
-    handle_delete_subscription(SubscriptionId),
-    {true, Req1, State}.
+    Body = handle_delete_subscription(SubscriptionId),
+    Req2 = cowboy_req:set_resp_body(Body, Req1),
+    {true, Req2, State}.
 
 handle_get_subscription() ->
     body_for(client:subscriptions()).
 
 %% TODO: handle delete id subscription
 handle_delete_subscription(undefined) ->
-    client:unsubscribe();
+    body_for(client:unsubscribe());
 
 handle_delete_subscription(Object) ->
-    client:unsubscribe({object, Object}).
+    body_for(client:unsubscribe({object, Object})).
 
 handle_create_subscription({<<"tag">>, Tag}) ->
     body_for(client:subscribe({tag, Tag}));
