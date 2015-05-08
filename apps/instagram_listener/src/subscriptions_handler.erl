@@ -50,7 +50,6 @@ delete_resource(Req, State) ->
 handle_get_subscription() ->
     body_for(client:subscriptions()).
 
-
 %% TODO: handle delete id subscription
 handle_delete_subscription(undefined) ->
     client:unsubscribe();
