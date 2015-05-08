@@ -25,7 +25,7 @@ content_types_provided(Req, State) ->
   {[{{<<"application">>, <<"json">>, []}, handle_get}], Req, State}.
 
 handle_get(Req, State) ->
-    Body = handle_get_subscription(),
+    Body = handle_get(),
     {Body, Req, State}.
 
 handle_post(Req, State) ->
@@ -34,7 +34,7 @@ handle_post(Req, State) ->
         Body = jsx:decode(ReqBody, [return_maps]),
         Type = maps:get(<<"type">>, Body),
         Value = maps:get(<<"value">>, Body),
-        RespBody = handle_create_subscription({Type, Value}),
+        RespBody = handle_create({Type, Value}),
         Req2 = cowboy_req:set_resp_body(RespBody, Req1),
         {true, Req2, State}
     catch
@@ -44,27 +44,27 @@ handle_post(Req, State) ->
 
 delete_resource(Req, State) ->
     {SubscriptionId, Req1} =  cowboy_req:binding(subscription_id, Req),
-    Body = handle_delete_subscription(SubscriptionId),
+    Body = handle_delete(SubscriptionId),
     Req2 = cowboy_req:set_resp_body(Body, Req1),
     {true, Req2, State}.
 
-handle_get_subscription() ->
+handle_get() ->
     body_for(client:subscriptions()).
 
 %% TODO: handle delete id subscription
-handle_delete_subscription(undefined) ->
+handle_delete(undefined) ->
     body_for(client:unsubscribe());
 
-handle_delete_subscription(Object) ->
+handle_delete(Object) ->
     body_for(client:unsubscribe({object, Object})).
 
-handle_create_subscription({<<"tag">>, Tag}) ->
+handle_create({<<"tag">>, Tag}) ->
     body_for(client:subscribe({tag, Tag}));
 
-handle_create_subscription({<<"location">>, Location}) ->
+handle_create({<<"location">>, Location}) ->
     body_for(client:subscribe({location, Location}));
 
-handle_create_subscription({<<"geography">>, Geography}) ->
+handle_create({<<"geography">>, Geography}) ->
     Lat = maps:get(<<"lat">>, Geography),
     Lng = maps:get(<<"lng">>, Geography),
     Radius = maps:get(<<"radius">>, Geography),
