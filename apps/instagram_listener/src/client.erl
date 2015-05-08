@@ -102,7 +102,7 @@ delete(Url) ->
 request(Method, Request) ->
     case httpc:request(Method, Request, [], []) of
         {ok, {{_, 200, _}, _Headers, ResponseBody}} ->
-            ResponseBody;
+            {ok, ResponseBody};
         Error ->
             {error, Error}
     end.
