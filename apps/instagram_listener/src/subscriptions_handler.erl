@@ -31,9 +31,7 @@ handle_get(Req, State) ->
 handle_post(Req, State) ->
     try
         {ok, ReqBody, Req1} = cowboy_req:body(Req),
-        Body = jsx:decode(ReqBody, [return_maps]),
-        Type = maps:get(<<"type">>, Body),
-        Value = maps:get(<<"value">>, Body),
+        {Type, Value} = subscription_params(ReqBody),
         RespBody = handle_create({Type, Value}),
         Req2 = cowboy_req:set_resp_body(RespBody, Req1),
         {true, Req2, State}
@@ -75,3 +73,7 @@ body_for({ok, Body}) ->
 
 body_for({error, _Error}) ->
     <<"{}">>.
+
+subscription_params(ReqBody) ->
+        Body = jsx:decode(ReqBody, [return_maps]),
+        {maps:get(<<"type">>, Body), maps:get(<<"value">>, Body)}.
