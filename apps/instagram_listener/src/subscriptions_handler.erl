@@ -58,8 +58,17 @@ handle_delete_subscription(undefined) ->
 handle_delete_subscription(Object) ->
     client:unsubscribe({object, Object}).
 
-handle_create_subscription(Subscription) ->
-    body_for(client:subscribe(Subscription)).
+handle_create_subscription({<<"tag">>, Tag}) ->
+    body_for(client:subscribe({tag, Tag}));
+
+handle_create_subscription({<<"location">>, Location}) ->
+    body_for(client:subscribe({location, Location}));
+
+handle_create_subscription({<<"geography">>, Geography}) ->
+    Lat = maps:get(<<"lat">>, Geography),
+    Lng = maps:get(<<"lng">>, Geography),
+    Radius = maps:get(<<"radius">>, Geography),
+    body_for(client:subscribe({geography, {Lat, Lng, Radius}})).
 
 body_for({ok, Body}) ->
     Body;
