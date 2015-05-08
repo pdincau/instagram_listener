@@ -39,7 +39,7 @@ handle_post(Req, State) ->
         {true, Req2, State}
     catch
         _:Exception ->
-            handle_exception(Exception, Req, State)
+            handler_utils:handle_exception(Exception, Req, State)
     end.
 
 delete_resource(Req, State) ->
@@ -75,11 +75,3 @@ body_for({ok, Body}) ->
 
 body_for({error, _Error}) ->
     <<"{}">>.
-
-handle_exception(bad_key, Req, State) ->
-    {ok, Req1} = cowboy_req:reply(400, Req),
-    {halt, Req1, State};
-
-handle_exception(badarg, Req, State) ->
-    {ok, Req1} = cowboy_req:reply(400, Req),
-    {halt, Req1, State}.
