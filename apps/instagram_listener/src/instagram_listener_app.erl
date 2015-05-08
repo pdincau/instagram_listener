@@ -20,4 +20,5 @@ stop(_State) ->
     ok.
 
 routes() ->
-    [{'_', [{"/instagram", handler, []}]}].
+    [{'_', [{"/instagram", handler, []},
+            {"/subscriptions/[:subscription_id]", subscriptions_handler, []}]}].
