@@ -75,5 +75,5 @@ body_for({error, _Error}) ->
     <<"{}">>.
 
 subscription_params(ReqBody) ->
-        Body = jsx:decode(ReqBody, [return_maps]),
-        {maps:get(<<"type">>, Body), maps:get(<<"value">>, Body)}.
+    Body = jsx:decode(ReqBody, [return_maps]),
+    {maps:get(<<"type">>, Body), maps:get(<<"value">>, Body)}.
