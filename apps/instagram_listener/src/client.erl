@@ -118,7 +118,6 @@ body_for(ClientId, ClientSecret, CallbackUrl, VerifyToken, Params) ->
     lists:flatten(io_lib:format(?BASE_BODY, [ClientId, ClientSecret, CallbackUrl, VerifyToken, Params])).
 
 custom_body(user) ->
-    %% TODO: Not sure here
     <<"object=user&aspect=media">>;
 
 custom_body({tag, ObjectId}) ->
