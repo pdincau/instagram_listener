@@ -49,12 +49,23 @@ delete_resource(Req, State) ->
 handle_get() ->
     body_for(client:subscriptions()).
 
-%% TODO: handle delete id subscription
 handle_delete(undefined) ->
     body_for(client:unsubscribe());
 
-handle_delete(Object) ->
-    body_for(client:unsubscribe({object, Object})).
+handle_delete(<<"tags">>) ->
+    body_for(client:unsubscribe({object, <<"tag">>}));
+
+handle_delete(<<"locations">>) ->
+    body_for(client:unsubscribe({object, <<"location">>}));
+
+handle_delete(<<"geographies">>) ->
+    body_for(client:unsubscribe({object, <<"geography">>}));
+
+handle_delete(<<"users">>) ->
+    body_for(client:unsubscribe({object, <<"user">>}));
+
+handle_delete(Id) ->
+    body_for(client:unsubscribe({id, Id})).
 
 handle_create({<<"tag">>, Tag}) ->
     body_for(client:subscribe({tag, Tag}));
