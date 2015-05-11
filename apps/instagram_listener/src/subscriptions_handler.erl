@@ -49,35 +49,11 @@ delete_resource(Req, State) ->
 handle_get() ->
     body_for(client:subscriptions()).
 
-handle_delete(undefined) ->
-    body_for(client:unsubscribe());
-
-handle_delete(<<"tags">>) ->
-    body_for(client:unsubscribe({object, <<"tag">>}));
-
-handle_delete(<<"locations">>) ->
-    body_for(client:unsubscribe({object, <<"location">>}));
-
-handle_delete(<<"geographies">>) ->
-    body_for(client:unsubscribe({object, <<"geography">>}));
-
-handle_delete(<<"users">>) ->
-    body_for(client:unsubscribe({object, <<"user">>}));
-
 handle_delete(Id) ->
     body_for(client:unsubscribe({id, Id})).
 
 handle_create({<<"tag">>, Tag}) ->
-    body_for(client:subscribe({tag, Tag}));
-
-handle_create({<<"location">>, Location}) ->
-    body_for(client:subscribe({location, Location}));
-
-handle_create({<<"geography">>, Geography}) ->
-    Lat = maps:get(<<"lat">>, Geography),
-    Lng = maps:get(<<"lng">>, Geography),
-    Radius = maps:get(<<"radius">>, Geography),
-    body_for(client:subscribe({geography, {Lat, Lng, Radius}})).
+    body_for(client:subscribe({tag, Tag})).
 
 body_for({ok, Body}) ->
     Body;

@@ -1,7 +1,7 @@
 -module(client).
 -behaviour(gen_server).
 
--export([start_link/0, stop/0, subscribe/1, subscriptions/0, unsubscribe/0, unsubscribe/1]).
+-export([start_link/0, stop/0, subscribe/1, subscriptions/0, unsubscribe/1]).
 
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2, code_change/3]).
 
@@ -16,9 +16,6 @@ subscribe(Subscription) ->
 
 subscriptions() ->
     gen_server:call(?SERVER, subscriptions).
-
-unsubscribe() ->
-    unsubscribe(all).
 
 unsubscribe(Subscription) ->
     gen_server:call(?SERVER, {unsubscribe, Subscription}).
@@ -74,16 +71,6 @@ handle_subscribe(Subscription, Id, Secret, CallbackUrl, Token) ->
     Body = body_for(Id, Secret, CallbackUrl, Token, custom_body(Subscription)),
     post(binary_to_list(?URL), Body).
 
-handle_unsubscribe(all, Secret, Id) ->
-    Url = url_for(Secret, Id, <<"object=all">>),
-    delete(Url);
-
-handle_unsubscribe({object, Object}, Secret, Id) ->
-    Params = <<"object=~s">>,
-    Params1 = lists:flatten(io_lib:format(Params, [Object])),
-    Url = url_for(Secret, Id, Params1),
-    delete(Url);
-
 handle_unsubscribe({id, SubscriptionId}, Secret, Id) ->
     Params = <<"id=~s">>,
     Params1 = lists:flatten(io_lib:format(Params, [SubscriptionId])),
@@ -117,17 +104,6 @@ url_for(ClientSecret, ClientId, Params) ->
 body_for(ClientId, ClientSecret, CallbackUrl, VerifyToken, Params) ->
     lists:flatten(io_lib:format(?BASE_BODY, [ClientId, ClientSecret, CallbackUrl, VerifyToken, Params])).
 
-custom_body(user) ->
-    <<"object=user&aspect=media">>;
-
 custom_body({tag, ObjectId}) ->
     Body = <<"object=tag&aspect=media&object_id=~s">>,
-    lists:flatten(io_lib:format(Body, [ObjectId]));
-
-custom_body({location, ObjectId}) ->
-    Body = <<"object=location&aspect=media&object_id=~s">>,
-    lists:flatten(io_lib:format(Body, [ObjectId]));
-
-custom_body({geography, {Lat, Lng, Radius}}) ->
-    Body = <<"object=geography&lat=~s&lng=~s&radius=~s&aspect=media">>,
-    lists:flatten(io_lib:format(Body, [Lat, Lng, Radius])).
+    lists:flatten(io_lib:format(Body, [ObjectId])).
