@@ -8,6 +8,7 @@
 -define(C_ACCEPTORS, 100).
 
 start(_StartType, _StartArgs) ->
+    error_logger:info_msg("Starting application instagram_listener.~n", []),
     Routes = routes(),
     Dispatch = cowboy_router:compile(Routes),
     Port = 8080,
