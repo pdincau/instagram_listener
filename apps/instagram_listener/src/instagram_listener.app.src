@@ -12,6 +12,7 @@
    ,crypto
    ,public_key
    ,ssl
+   ,lager
    ]}
  ,{env,[]}
  ,{modules, []}
